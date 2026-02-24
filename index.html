@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekraw — Pitch Deck</title>
+
+    <!-- Fonts: Cabinet Grotesk for headings, Satoshi for body -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500;700;800&f[]=satoshi@400;500;700&display=swap">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (THEME)
+           Change these to change the whole look
+           =========================================== */
+        :root {
+            /* Colors */
+            --bg-light: #faf9f6;
+            --bg-dark: #1a1a2e;
+            --bg-darker: #12122a;
+            --text-primary: #1a1a2e;
+            --text-secondary: #6b6b80;
+            --text-light: #ffffff;
+            --text-light-muted: rgba(255,255,255,0.5);
+            --accent: #e85d26;
+            --accent-soft: rgba(232, 93, 38, 0.12);
+            --accent-glow: rgba(232, 93, 38, 0.25);
+
+            /* Typography — responsive with clamp() */
+            --font-display: 'Cabinet Grotesk', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --title-size: clamp(2rem, 5.5vw, 4.5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2vw, 1.5rem);
+            --body-size: clamp(0.8rem, 1.3vw, 1.05rem);
+            --small-size: clamp(0.65rem, 1vw, 0.8rem);
+
+            /* Spacing — responsive */
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(0.75rem, 2vw, 2rem);
+            --element-gap: clamp(0.4rem, 1vw, 1rem);
+
+            /* Animation */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration: 0.7s;
+        }
+
+        /* ===========================================
+           RESET & BASE
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-light);
+            color: var(--text-primary);
+            height: 100%;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===========================================
+           SLIDE BASE
+           Each slide = exact viewport height, no scroll
+           =========================================== */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            position: relative;
+        }
+
+        .slide-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--slide-padding);
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            letter-spacing: -0.03em;
+            line-height: 1.08;
+        }
+
+        h1 { font-size: var(--title-size); font-weight: 800; }
+        h2 { font-size: var(--h2-size); font-weight: 700; }
+        h3 { font-size: var(--h3-size); font-weight: 700; }
+
+        p {
+            font-size: var(--body-size);
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .highlight {
+            position: relative;
+            display: inline-block;
+        }
+
+        .highlight::after {
+            content: '';
+            position: absolute;
+            bottom: 0.05em;
+            left: -0.05em;
+            right: -0.05em;
+            height: 0.3em;
+            background: var(--accent-soft);
+            border-radius: 4px;
+            z-index: -1;
+        }
+
+        .eyebrow {
+            font-size: var(--small-size);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--accent);
+            margin-bottom: var(--content-gap);
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           Triggered by .visible class via IntersectionObserver
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity var(--duration) var(--ease-out-expo),
+                        transform var(--duration) var(--ease-out-expo);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity var(--duration) var(--ease-out-expo),
+                        transform var(--duration) var(--ease-out-expo);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity var(--duration) var(--ease-out-expo),
+                        transform var(--duration) var(--ease-out-expo);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity var(--duration) var(--ease-out-expo),
+                        transform var(--duration) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal,
+        .slide.visible .reveal-left,
+        .slide.visible .reveal-right,
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: translateY(0) translateX(0) scale(1);
+        }
+
+        /* Stagger children */
+        .reveal:nth-child(1), .reveal-left:nth-child(1), .reveal-right:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2), .reveal-left:nth-child(2), .reveal-right:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3), .reveal-left:nth-child(3), .reveal-right:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4), .reveal-left:nth-child(4), .reveal-right:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
+        .reveal:nth-child(6) { transition-delay: 0.6s; }
+
+        .stagger-1 { transition-delay: 0.15s !important; }
+        .stagger-2 { transition-delay: 0.25s !important; }
+        .stagger-3 { transition-delay: 0.35s !important; }
+        .stagger-4 { transition-delay: 0.45s !important; }
+        .stagger-5 { transition-delay: 0.55s !important; }
+        .stagger-6 { transition-delay: 0.65s !important; }
+
+        /* ===========================================
+           LAYOUT: SPLIT SLIDES
+           Two-panel layout: content left, visual right
+           =========================================== */
+        .split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 100%;
+        }
+
+        .split-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--slide-padding);
+            overflow: hidden;
+        }
+
+        .split-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Dark right panel */
+        .panel-dark {
+            background: var(--bg-dark);
+        }
+
+        .panel-dark::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 30% 70%, var(--accent-glow) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(255, 160, 60, 0.08) 0%, transparent 50%);
+        }
+
+        /* Light right panel */
+        .panel-accent {
+            background: var(--accent);
+        }
+
+        .panel-accent::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 30% 70%, rgba(0,0,0,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 40%);
+        }
+
+        /* ===========================================
+           LAYOUT: FULL-WIDTH DARK SLIDES
+           =========================================== */
+        .dark-slide {
+            background: var(--bg-dark);
+            color: var(--text-light);
+        }
+
+        .dark-slide p {
+            color: var(--text-light-muted);
+        }
+
+        .dark-slide .eyebrow {
+            color: var(--accent);
+        }
+
+        .darker-slide {
+            background: var(--bg-darker);
+            color: var(--text-light);
+        }
+
+        .darker-slide p {
+            color: var(--text-light-muted);
+        }
+
+        /* ===========================================
+           COMPONENTS
+           =========================================== */
+
+        /* --- Feature cards --- */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+            gap: clamp(0.6rem, 1.5vw, 1.2rem);
+            margin-top: var(--content-gap);
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: clamp(1rem, 2vw, 1.5rem);
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(232, 93, 38, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);
+        }
+
+        .feature-card h3 {
+            font-size: clamp(0.8rem, 1.3vw, 1rem);
+            color: var(--text-light);
+            margin-bottom: 0.3em;
+        }
+
+        .feature-card p {
+            font-size: var(--small-size);
+            color: var(--text-light-muted);
+            line-height: 1.5;
+        }
+
+        /* --- Stat blocks --- */
+        .stat-row {
+            display: flex;
+            gap: clamp(1.5rem, 4vw, 4rem);
+            margin-top: var(--content-gap);
+        }
+
+        .stat-block .stat-number {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 800;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .stat-block .stat-label {
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            margin-top: 0.3em;
+        }
+
+        /* Dark version */
+        .dark-slide .stat-block .stat-label {
+            color: var(--text-light-muted);
+        }
+
+        /* --- Mock UI card --- */
+        .mock-card {
+            position: relative;
+            width: clamp(200px, 75%, 340px);
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: clamp(1.2rem, 2vw, 2rem);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        .mock-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: clamp(0.6rem, 1vw, 1rem);
+        }
+
+        .play-icon {
+            width: clamp(28px, 3vw, 36px);
+            height: clamp(28px, 3vw, 36px);
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .play-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 8px solid white;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            margin-left: 2px;
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+            color: var(--text-light);
+        }
+
+        .card-sub {
+            font-size: var(--small-size);
+            color: var(--text-light-muted);
+        }
+
+        .mock-features {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.35rem, 0.7vw, 0.5rem);
+        }
+
+        .mock-feature {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: var(--small-size);
+            color: rgba(255,255,255,0.6);
+        }
+
+        .mock-feature .dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* --- Steps / Flow --- */
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.6rem, 1.2vw, 1.2rem);
+            margin-top: var(--content-gap);
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: clamp(0.6rem, 1.2vw, 1.2rem);
+        }
+
+        .step-num {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(1.2rem, 2vw, 1.8rem);
+            color: var(--accent);
+            line-height: 1;
+            flex-shrink: 0;
+            width: clamp(1.5rem, 2.5vw, 2.5rem);
+        }
+
+        .step-content h3 {
+            font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+            margin-bottom: 0.15em;
+        }
+
+        .step-content p {
+            font-size: var(--small-size);
+        }
+
+        /* --- Big number emphasis --- */
+        .big-number {
+            font-family: var(--font-display);
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 800;
+            line-height: 1;
+            color: var(--accent);
+        }
+
+        .big-number-label {
+            font-size: var(--h3-size);
+            color: var(--text-secondary);
+            margin-top: 0.3em;
+        }
+
+        .dark-slide .big-number-label {
+            color: var(--text-light-muted);
+        }
+
+        /* --- Pill tags --- */
+        .pill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: clamp(0.3rem, 0.6vw, 0.5rem);
+            margin-top: var(--element-gap);
+        }
+
+        .pill {
+            font-size: var(--small-size);
+            font-weight: 500;
+            padding: 0.35em 0.9em;
+            border-radius: 100px;
+            background: var(--accent-soft);
+            color: var(--accent);
+        }
+
+        .dark-slide .pill {
+            background: rgba(232, 93, 38, 0.15);
+            border: 1px solid rgba(232, 93, 38, 0.25);
+        }
+
+        /* --- CTA button --- */
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5em;
+            font-family: var(--font-body);
+            font-size: var(--body-size);
+            font-weight: 600;
+            color: white;
+            background: var(--accent);
+            border: none;
+            padding: 0.8em 1.8em;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-top: var(--content-gap);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+
+        /* --- Timeline bars (spaced repetition) --- */
+        .timeline-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: clamp(0.5rem, 1.5vw, 1.5rem);
+            margin-top: var(--content-gap);
+            height: clamp(80px, 15vh, 150px);
+        }
+
+        .timeline-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.4rem;
+            height: 100%;
+            justify-content: flex-end;
+        }
+
+        .bar {
+            width: 100%;
+            max-width: 60px;
+            border-radius: 8px 8px 4px 4px;
+            transition: height 1s var(--ease-out-expo);
+        }
+
+        .bar-label {
+            font-size: var(--small-size);
+            color: var(--text-light-muted);
+            font-weight: 500;
+        }
+
+        .bar-value {
+            font-family: var(--font-display);
+            font-size: clamp(0.7rem, 1.2vw, 1rem);
+            font-weight: 700;
+            color: var(--text-light);
+        }
+
+        /* ===========================================
+           NAVIGATION
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(0.8rem, 2vw, 1.5rem);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(26, 26, 46, 0.15);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0;
+        }
+
+        .dark-slide ~ .nav-dots .nav-dot,
+        .nav-dot {
+            background: rgba(26, 26, 46, 0.15);
+        }
+
+        .nav-dot.active {
+            background: var(--accent);
+            transform: scale(1.3);
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 200;
+            transition: width 0.3s ease;
+        }
+
+        /* Slide counter */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(1rem, 2vw, 1.5rem);
+            right: clamp(1rem, 2vw, 1.5rem);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            font-weight: 700;
+            color: rgba(26, 26, 46, 0.3);
+            z-index: 100;
+            transition: color 0.3s ease;
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-width: 768px) {
+            .split {
+                grid-template-columns: 1fr;
+            }
+
+            .split-right {
+                display: none;
+            }
+
+            .stat-row {
+                flex-direction: column;
+                gap: clamp(0.8rem, 2vw, 1.5rem);
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-dots {
+                display: none;
+            }
+        }
+
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(1rem, 3vw, 2.5rem);
+                --content-gap: clamp(0.5rem, 1.5vw, 1rem);
+                --title-size: clamp(1.5rem, 4.5vw, 3rem);
+                --h2-size: clamp(1.25rem, 3vw, 2rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.4rem, 1vw, 0.75rem);
+                --title-size: clamp(1.25rem, 4vw, 2.5rem);
+                --body-size: clamp(0.7rem, 1.1vw, 0.9rem);
+            }
+
+            .nav-dots, .slide-counter { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 2rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.5rem);
+                --body-size: clamp(0.65rem, 1vw, 0.8rem);
+            }
+        }
+
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Progress bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide counter -->
+    <div class="slide-counter" id="slideCounter"></div>
+
+
+    <!-- ===========================================
+         SLIDE 1: TITLE
+         Split layout — headline left, mock card right
+         =========================================== -->
+    <section class="slide" data-theme="light">
+        <div class="split">
+            <div class="split-left">
+                <div class="eyebrow reveal">Ekraw</div>
+                <h1 class="reveal stagger-2">Stop Watching.<br>Start <span class="highlight">Mastering.</span></h1>
+                <p class="reveal stagger-3" style="max-width: 420px;">Turn any YouTube tutorial into an interactive learning experience — with AI-powered notes, quizzes, and roadmaps.</p>
+            </div>
+            <div class="split-right panel-dark">
+                <div class="mock-card reveal-scale stagger-3">
+                    <div class="card-header">
+                        <div class="play-icon"></div>
+                        <div>
+                            <div class="card-title">React Hooks Deep Dive</div>
+                            <div class="card-sub">45 min tutorial captured</div>
+                        </div>
+                    </div>
+                    <div class="mock-features">
+                        <div class="mock-feature"><span class="dot"></span> Study notes generated</div>
+                        <div class="mock-feature"><span class="dot"></span> 12 quiz questions ready</div>
+                        <div class="mock-feature"><span class="dot"></span> Learning roadmap created</div>
+                        <div class="mock-feature"><span class="dot"></span> Mini-project assigned</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 2: THE PROBLEM
+         Big number emphasis — dramatic stat
+         =========================================== -->
+    <section class="slide dark-slide" data-theme="dark">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="eyebrow reveal">The Problem</div>
+            <div class="big-number reveal stagger-2">90%</div>
+            <p class="reveal stagger-3" style="max-width: 500px; font-size: var(--h3-size); color: var(--text-light-muted);">
+                of tutorial content is forgotten within one week.
+            </p>
+            <p class="reveal stagger-4" style="max-width: 450px; margin-top: var(--element-gap);">
+                People watch hundreds of YouTube tutorials but have no system to capture, organize, review, and practice what they learn.
+            </p>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 3: THE SOLUTION
+         Split layout — text left, accent panel right
+         =========================================== -->
+    <section class="slide" data-theme="light">
+        <div class="split">
+            <div class="split-left">
+                <div class="eyebrow reveal">The Solution</div>
+                <h2 class="reveal stagger-2">A Chrome Extension<br>+ Web Platform</h2>
+                <p class="reveal stagger-3" style="max-width: 400px;">
+                    Ekraw detects when you're watching a tutorial, captures it, and transforms it into a complete learning system.
+                </p>
+                <div class="pill-row reveal stagger-4">
+                    <span class="pill">Chrome Extension</span>
+                    <span class="pill">Web Dashboard</span>
+                    <span class="pill">AI-Powered</span>
+                </div>
+            </div>
+            <div class="split-right panel-accent">
+                <div style="text-align: center; color: white; z-index: 1; position: relative; padding: var(--slide-padding);">
+                    <div class="reveal-scale stagger-3" style="font-family: var(--font-display); font-size: clamp(3rem, 8vw, 6rem); font-weight: 800; line-height: 1;">E</div>
+                    <div class="reveal stagger-4" style="font-size: var(--body-size); opacity: 0.85; margin-top: 0.5em;">ekraw.com</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 4: HOW IT WORKS
+         Steps / flow layout
+         =========================================== -->
+    <section class="slide dark-slide" data-theme="dark">
+        <div class="slide-content">
+            <div class="eyebrow reveal">How It Works</div>
+            <h2 class="reveal stagger-2">From Video to Mastery<br>in <span style="color: var(--accent);">4 Steps</span></h2>
+            <div class="steps">
+                <div class="step reveal stagger-2">
+                    <div class="step-num">01</div>
+                    <div class="step-content">
+                        <h3 style="color: var(--text-light);">Capture</h3>
+                        <p>Ekraw detects YouTube tutorials and processes the transcript automatically.</p>
+                    </div>
+                </div>
+                <div class="step reveal stagger-3">
+                    <div class="step-num">02</div>
+                    <div class="step-content">
+                        <h3 style="color: var(--text-light);">Transform</h3>
+                        <p>AI generates structured study notes grounded to video timestamps.</p>
+                    </div>
+                </div>
+                <div class="step reveal stagger-4">
+                    <div class="step-num">03</div>
+                    <div class="step-content">
+                        <h3 style="color: var(--text-light);">Quiz & Review</h3>
+                        <p>Instant comprehension quizzes plus spaced repetition at D+1, D+3, D+7.</p>
+                    </div>
+                </div>
+                <div class="step reveal stagger-5">
+                    <div class="step-num">04</div>
+                    <div class="step-content">
+                        <h3 style="color: var(--text-light);">Practice</h3>
+                        <p>Hands-on mini-projects with specs, starter code, and self-check rubrics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 5: CORE FEATURES (Part 1)
+         Feature grid — 3 cards
+         =========================================== -->
+    <section class="slide darker-slide" data-theme="dark">
+        <div class="slide-content">
+            <div class="eyebrow reveal">Core Features</div>
+            <h2 class="reveal stagger-2" style="color: var(--text-light);">Smart Learning<br><span style="color: var(--accent);">Tools</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card reveal stagger-3">
+                    <div class="feature-icon">📝</div>
+                    <h3>AI Study Notes</h3>
+                    <p>Structured notes linked to video timestamps. Jump back to the exact moment.</p>
+                </div>
+                <div class="feature-card reveal stagger-4">
+                    <div class="feature-icon">🧠</div>
+                    <h3>Instant Quizzes</h3>
+                    <p>Contextual questions generated right after the recap to test comprehension.</p>
+                </div>
+                <div class="feature-card reveal stagger-5">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Spaced Repetition</h3>
+                    <p>Recall prompts at D+1, D+3, D+7 intervals. Reinforces weak points automatically.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 6: CORE FEATURES (Part 2)
+         Feature grid — 3 more cards
+         =========================================== -->
+    <section class="slide darker-slide" data-theme="dark">
+        <div class="slide-content">
+            <div class="eyebrow reveal">More Features</div>
+            <h2 class="reveal stagger-2" style="color: var(--text-light);">Beyond <span style="color: var(--accent);">Notes</span></h2>
+            <div class="feature-grid">
+                <div class="feature-card reveal stagger-3">
+                    <div class="feature-icon">💬</div>
+                    <h3>AI Chat</h3>
+                    <p>Ask any question about the video. AI answers from the recap content.</p>
+                </div>
+                <div class="feature-card reveal stagger-4">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>Roadmaps</h3>
+                    <p>Step-by-step learning paths suggesting what to study next.</p>
+                </div>
+                <div class="feature-card reveal stagger-5">
+                    <div class="feature-icon">🔨</div>
+                    <h3>Mini-Projects</h3>
+                    <p>Hands-on projects with a spec, starter code, and self-check rubric.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 7: RETENTION IMPACT
+         Visual bar chart showing spaced repetition effect
+         =========================================== -->
+    <section class="slide dark-slide" data-theme="dark">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="eyebrow reveal">The Ekraw Effect</div>
+            <h2 class="reveal stagger-2" style="color: var(--text-light);">Knowledge That <span style="color: var(--accent);">Sticks</span></h2>
+            <p class="reveal stagger-3" style="max-width: 450px;">Spaced repetition transforms the forgetting curve into lasting retention.</p>
+            <div class="timeline-bars reveal stagger-4">
+                <div class="timeline-bar">
+                    <div class="bar-value">100%</div>
+                    <div class="bar" style="height: 100%; background: var(--accent);" data-height="100"></div>
+                    <div class="bar-label">Day 0</div>
+                </div>
+                <div class="timeline-bar">
+                    <div class="bar-value" style="color: rgba(255,255,255,0.3);">40%</div>
+                    <div class="bar" style="height: 40%; background: rgba(255,255,255,0.1);" data-height="40"></div>
+                    <div class="bar-label" style="opacity:0.4;">Without</div>
+                </div>
+                <div class="timeline-bar">
+                    <div class="bar-value">85%</div>
+                    <div class="bar" style="height: 85%; background: var(--accent); opacity: 0.8;" data-height="85"></div>
+                    <div class="bar-label">D+1 Review</div>
+                </div>
+                <div class="timeline-bar">
+                    <div class="bar-value" style="color: rgba(255,255,255,0.3);">20%</div>
+                    <div class="bar" style="height: 20%; background: rgba(255,255,255,0.1);" data-height="20"></div>
+                    <div class="bar-label" style="opacity:0.4;">Without</div>
+                </div>
+                <div class="timeline-bar">
+                    <div class="bar-value">80%</div>
+                    <div class="bar" style="height: 80%; background: var(--accent); opacity: 0.65;" data-height="80"></div>
+                    <div class="bar-label">D+7 Review</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 8: BONUS FEATURES
+         Split layout — text + job insights
+         =========================================== -->
+    <section class="slide" data-theme="light">
+        <div class="split">
+            <div class="split-left">
+                <div class="eyebrow reveal">Bonus</div>
+                <h2 class="reveal stagger-2">Career-Aware<br><span class="highlight">Learning</span></h2>
+                <p class="reveal stagger-3" style="max-width: 380px;">
+                    Ekraw connects what you learn to real career outcomes — showing related roles, salary ranges, and market demand.
+                </p>
+                <div class="pill-row reveal stagger-4">
+                    <span class="pill">Job Insights</span>
+                    <span class="pill">Salary Data</span>
+                    <span class="pill">Recommendations</span>
+                </div>
+            </div>
+            <div class="split-right panel-dark">
+                <div style="z-index: 1; position: relative; padding: clamp(1.5rem, 3vw, 3rem); width: 100%; max-width: 350px;">
+                    <div class="reveal stagger-3" style="color: var(--text-light); font-family: var(--font-display); font-weight: 700; font-size: var(--h3-size); margin-bottom: var(--content-gap);">Related Roles</div>
+                    <div style="display: flex; flex-direction: column; gap: clamp(0.5rem, 1vw, 0.8rem);">
+                        <div class="reveal stagger-3" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: clamp(0.6rem, 1vw, 0.8rem) clamp(0.8rem, 1.2vw, 1rem); display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-light); font-size: var(--small-size); font-weight: 500;">Frontend Developer</span>
+                            <span style="color: var(--accent); font-size: var(--small-size); font-weight: 700;">$95k–145k</span>
+                        </div>
+                        <div class="reveal stagger-4" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: clamp(0.6rem, 1vw, 0.8rem) clamp(0.8rem, 1.2vw, 1rem); display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-light); font-size: var(--small-size); font-weight: 500;">React Engineer</span>
+                            <span style="color: var(--accent); font-size: var(--small-size); font-weight: 700;">$110k–160k</span>
+                        </div>
+                        <div class="reveal stagger-5" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: clamp(0.6rem, 1vw, 0.8rem) clamp(0.8rem, 1.2vw, 1rem); display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: var(--text-light); font-size: var(--small-size); font-weight: 500;">Full-Stack Dev</span>
+                            <span style="color: var(--accent); font-size: var(--small-size); font-weight: 700;">$100k–155k</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 9: TECH & TRACTION
+         Stats row
+         =========================================== -->
+    <section class="slide dark-slide" data-theme="dark">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <div class="eyebrow reveal">Built to Scale</div>
+            <h2 class="reveal stagger-2" style="color: var(--text-light);">Modern <span style="color: var(--accent);">Stack</span></h2>
+            <p class="reveal stagger-3" style="max-width: 450px;">Production-ready architecture with CI/CD, automated migrations, and multi-environment deployments.</p>
+            <div class="stat-row reveal stagger-4" style="justify-content: center; margin-top: var(--content-gap);">
+                <div class="stat-block" style="text-align: center;">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">CI checks per PR</div>
+                </div>
+                <div class="stat-block" style="text-align: center;">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Environments</div>
+                </div>
+                <div class="stat-block" style="text-align: center;">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Manual deploys</div>
+                </div>
+            </div>
+            <div class="pill-row reveal stagger-5" style="justify-content: center; margin-top: var(--content-gap);">
+                <span class="pill">Next.js</span>
+                <span class="pill">Prisma</span>
+                <span class="pill">Vercel</span>
+                <span class="pill">Neon</span>
+                <span class="pill">Redis</span>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+         SLIDE 10: CALL TO ACTION
+         Split layout — closing message
+         =========================================== -->
+    <section class="slide" data-theme="light">
+        <div class="split">
+            <div class="split-left">
+                <div class="eyebrow reveal">Get Started</div>
+                <h1 class="reveal stagger-2">Learn Smarter,<br>Not <span class="highlight">Harder.</span></h1>
+                <p class="reveal stagger-3" style="max-width: 400px;">
+                    Ekraw transforms passive watching into active learning. Every tutorial you watch becomes a stepping stone to real skills.
+                </p>
+                <button class="cta-btn reveal stagger-4">
+                    Try Ekraw Free
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="margin-left: 0.2em;">
+                        <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="split-right panel-dark">
+                <div style="z-index: 1; position: relative; text-align: center; color: var(--text-light);">
+                    <div class="reveal-scale stagger-3" style="font-family: var(--font-display); font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 800;">ekraw.com</div>
+                    <div class="reveal stagger-4" style="font-size: var(--small-size); color: var(--text-light-muted); margin-top: 0.5em;">Your learning companion</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ===========================================
+       JAVASCRIPT: SLIDE CONTROLLER
+       Handles navigation, animations, and interactions
+       =========================================== -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.totalSlides = this.slides.length;
+                this.isTransitioning = false;
+                this.touchStartY = 0;
+
+                this.init();
+            }
+
+            init() {
+                this.createNavDots();
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupTouchNav();
+                this.setupWheelNav();
+                this.updateCounter();
+                this.updateProgress();
+                this.updateTheme();
+            }
+
+            /* --- Navigation dots --- */
+            createNavDots() {
+                const nav = document.getElementById('navDots');
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.classList.add('nav-dot');
+                    if (i === 0) dot.classList.add('active');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => this.goToSlide(i));
+                    nav.appendChild(dot);
+                });
+                this.dots = nav.querySelectorAll('.nav-dot');
+            }
+
+            /* --- Intersection Observer for scroll-triggered animations --- */
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            if (index !== -1) {
+                                this.currentSlide = index;
+                                this.updateNavDots();
+                                this.updateCounter();
+                                this.updateProgress();
+                                this.updateTheme();
+                            }
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            /* --- Keyboard navigation (arrows, space) --- */
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') {
+                        e.preventDefault();
+                        this.nextSlide();
+                    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        this.prevSlide();
+                    }
+                });
+            }
+
+            /* --- Touch/swipe support --- */
+            setupTouchNav() {
+                document.addEventListener('touchstart', (e) => {
+                    this.touchStartY = e.touches[0].clientY;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = this.touchStartY - e.changedTouches[0].clientY;
+                    if (Math.abs(deltaY) > 50) {
+                        deltaY > 0 ? this.nextSlide() : this.prevSlide();
+                    }
+                }, { passive: true });
+            }
+
+            /* --- Mouse wheel navigation --- */
+            setupWheelNav() {
+                let lastScroll = 0;
+                document.addEventListener('wheel', (e) => {
+                    const now = Date.now();
+                    if (now - lastScroll < 800) return;
+                    lastScroll = now;
+
+                    if (e.deltaY > 30) this.nextSlide();
+                    else if (e.deltaY < -30) this.prevSlide();
+                }, { passive: true });
+            }
+
+            /* --- Navigation methods --- */
+            goToSlide(index) {
+                if (index < 0 || index >= this.totalSlides) return;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                this.currentSlide = index;
+                this.updateNavDots();
+                this.updateCounter();
+                this.updateProgress();
+                this.updateTheme();
+            }
+
+            nextSlide() {
+                if (this.currentSlide < this.totalSlides - 1) {
+                    this.goToSlide(this.currentSlide + 1);
+                }
+            }
+
+            prevSlide() {
+                if (this.currentSlide > 0) {
+                    this.goToSlide(this.currentSlide - 1);
+                }
+            }
+
+            /* --- UI updates --- */
+            updateNavDots() {
+                this.dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === this.currentSlide);
+                });
+            }
+
+            updateCounter() {
+                const counter = document.getElementById('slideCounter');
+                counter.textContent = `${String(this.currentSlide + 1).padStart(2, '0')} / ${String(this.totalSlides).padStart(2, '0')}`;
+            }
+
+            updateProgress() {
+                const bar = document.getElementById('progressBar');
+                const progress = ((this.currentSlide + 1) / this.totalSlides) * 100;
+                bar.style.width = `${progress}%`;
+            }
+
+            /* --- Theme-aware UI (dark/light slide detection) --- */
+            updateTheme() {
+                const current = this.slides[this.currentSlide];
+                const isDark = current.dataset.theme === 'dark';
+                const counter = document.getElementById('slideCounter');
+                const dots = document.querySelectorAll('.nav-dot:not(.active)');
+
+                counter.style.color = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(26,26,46,0.3)';
+                dots.forEach(dot => {
+                    dot.style.background = isDark ? 'rgba(255,255,255,0.15)' : 'rgba(26,26,46,0.15)';
+                });
+            }
+        }
+
+        /* Initialize when DOM is ready */
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>
